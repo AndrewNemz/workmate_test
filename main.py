@@ -37,8 +37,10 @@ if __name__ == '__main__':
         default='json',
         help='Параметр, определяющий тип отчета, изначально - json'
     )
-
-    args = parser.parse_args()
-    start_script(
-        args.data, args.report_par, args.report_type
-    )
+    try:
+        args = parser.parse_args()
+        start_script(
+            args.data, args.report_par, args.report_type
+        )
+    except Exception as e:
+        logger.error(f"Ошибка при обработке аргументов командной строки: {e}")

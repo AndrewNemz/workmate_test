@@ -16,16 +16,17 @@ class ReportRepo(IReportRepo):
             match report_par:
                 case 'payout':
                     for file in data:
-                        file_data = self._get_file_data(file)
-
                         filename = os.path.basename(file)
+                        file_data = self._get_file_data(file)
                         if file_data:
                             report_data[filename] = file_data
-                case 'new report_par':
+                        report = self._join_data(report_data, report_par)
+                case 'another report_par':
                     # Добавьте здесь отчет нового типа
                     pass
-            report = self._join_data(report_data, report_par)
             return report
+        except FileNotFoundError:
+            raise FileNotFoundError
         except Exception as error:
             raise error
 
@@ -38,12 +39,11 @@ class ReportRepo(IReportRepo):
                 for employee in employees:
                     department = employee['department']
                     name = employee.get('name')
-                    rate = employee.get('rate') or employee.get('hourly_rate')
+                    rate = employee.get('rate') or employee.get('hourly_rate') or employee.get('salary')
                     hours_worked = employee.get('hours_worked')
 
                     if department not in transformed_data:
                         transformed_data[department] = {}
-
                     transformed_data[department][name] = {
                         'rate': rate,
                         'hours_worked': hours_worked,
@@ -67,6 +67,8 @@ class ReportRepo(IReportRepo):
                         header: value for header, value in zip(headers, values)
                     }
                     data.append(recorded_data)
+        except FileNotFoundError:
+            raise FileNotFoundError
         except Exception as error:
             logger.error(f'Ошибка при чтении {file_data}: {error}')
 

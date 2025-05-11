@@ -24,13 +24,19 @@ class ReportInteractor:
             f'Тип отчета - {report_type}, '
             f'Параметр отчета - {report_par}'
         )
-
-        match report_type:
-            case 'json':
-                json_report = self.report_repo.create_json_report(
-                    data=data, report_par=report_par
-                )
-                pprint(json_report)
-            case 'another type':
-                # self.report_repo.create_another_type_report()
-                pass
+        try:
+            match report_type:
+                case 'json':
+                    report = self.report_repo.create_json_report(
+                        data=data, report_par=report_par
+                    )
+                case 'another type':
+                    # self.report_repo.create_another_type_report()
+                    pass
+            pprint(report)
+            return report
+        except FileNotFoundError:
+            logger.error('Файл данных не найден')
+            raise FileNotFoundError
+        except Exception as error:
+            logger.error(f'Возникла ошибка - {error}')
